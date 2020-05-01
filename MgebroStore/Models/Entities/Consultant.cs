@@ -32,6 +32,7 @@ namespace MgebroStore.Models.Entities
 
         [Required(ErrorMessage = "გთხოვთ მიუთითოთ თარიღი")]
         [DisplayName("დაბადების თარიღი")]
+        [DataType(DataType.Date)]
         public DateTime Birthdate { get; set; }
 
         [DisplayName("რეკომენდატორი")]
@@ -41,9 +42,11 @@ namespace MgebroStore.Models.Entities
 
     public enum Gender
     {
+        [Display(Name = "მამაკაცი")]
         Male = 0,
-        Female = 1,
-        Other = 2
+
+        [Display(Name = "ქალი")]
+        Female = 1
     }
 
 }

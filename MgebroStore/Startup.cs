@@ -61,7 +61,7 @@ namespace MgebroStore
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Consultants}/{action=Create}/{id?}");
             });
         }
     }
