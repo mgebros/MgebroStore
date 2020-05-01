@@ -35,7 +35,7 @@ namespace MgebroStore.Models.Entities
         public DateTime Birthdate { get; set; }
 
         [DisplayName("რეკომენდატორი")]
-        public int Referral { get; set; }
+        public int Referral { get; set; } = 0;
     }
 
 
