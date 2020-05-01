@@ -9,18 +9,18 @@ namespace MgebroStore.Models
 {
     public class StoreContext : DbContext
     {
-        public StoreContext()
+        public StoreContext(DbContextOptions<StoreContext> options) : base(options)
         {
 
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //}
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-        }
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
+        //}
         //entities
         public DbSet<Consultant> Consultants { get; set; }
     }
