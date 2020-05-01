@@ -19,13 +19,15 @@ namespace MgebroStore.Controllers
             _context = context;
         }
 
-        // GET: Consultants
+
+
         public async Task<IActionResult> Index()
         {
             return View(await _context.Consultants.ToListAsync());
         }
 
-        // GET: Consultants/Details/5
+
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -43,20 +45,34 @@ namespace MgebroStore.Controllers
             return View(consultant);
         }
 
-        // GET: Consultants/Create
+
+
         public IActionResult Create()
         {
+
+            List<SelectListItem> refDict = new List<SelectListItem>();
+
+            refDict.Add(new SelectListItem("არავინ", "0"));
+
+            refDict.AddRange(_context.Consultants.Select(c => new SelectListItem { Value = c.ID.ToString(), Text = c.LastName + " " + c.FirstName }).ToList());
+
+            ViewBag.Referrals = refDict;
 
             return View();
         }
 
-        // POST: Consultants/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ID,FirstName,LastName,PID,Gender,Birthdate,Referral")] Consultant consultant)
         {
+            if (consultant.Referral != 0) {
+                var exists = _context.Consultants.FirstOrDefault(c => c.ID == consultant.Referral);
+                if(exists is null)
+                    return View(consultant);
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(consultant);
