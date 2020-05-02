@@ -1,0 +1,41 @@
+﻿@model MgebroStore.Models.CreateSaleViewModel
+
+@{
+    ViewData["Title"] = "გაყიდვები";
+}
+
+<h1>დამატება</h1>
+
+<h4>გაყიდვები</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Saler.ReferralName" class="control-label"></label>
+                @Html.DropDownListFor(model => model.Saler.ID,
+                                         (IEnumerable<SelectListItem>)ViewBag.Referrals, new { @class = "form-control" })
+                <span asp-validation-for="ReferralID" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SalerInfo" class="control-label"></label>
+                <input asp-for="SalerInfo" class="form-control" />
+                <span asp-validation-for="SalerInfo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="დამატება" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">დაბრუნება</a>
+</div>
+

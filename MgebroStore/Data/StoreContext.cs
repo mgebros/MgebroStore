@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MgebroStore.Models;
 
 namespace MgebroStore.Data
 {
@@ -24,5 +25,7 @@ namespace MgebroStore.Data
         //entities
         public DbSet<Consultant> Consultants { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<Sale> Sales { get; set; }
+        public DbSet<MgebroStore.Models.CreateSaleViewModel> CreateSaleViewModel { get; set; }
     }
 }
