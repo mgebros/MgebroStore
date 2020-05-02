@@ -12,7 +12,8 @@ namespace MgebroStore.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            return RedirectToAction("Index", "Products");
+            //return View();
         }
 
         public IActionResult Privacy()

@@ -34,6 +34,8 @@ namespace MgebroStore.Data.Entities
         [Required(ErrorMessage = "გთხოვთ მიუთითოთ თარიღი")]
         [DisplayName("დაბ. თარიღი")]
         [DataType(DataType.Date)]
+        //[Range(typeof(DateTime), "1.1.1940", "3.4.2002",
+        //ErrorMessage = "დასაშვებია {1}-დან  {2}-მდე")]
         public DateTime Birthdate { get; set; }
 
         [DisplayName("რეკომენდატორი")]

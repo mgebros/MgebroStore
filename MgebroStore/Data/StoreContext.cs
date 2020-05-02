@@ -23,5 +23,6 @@ namespace MgebroStore.Data
         //}
         //entities
         public DbSet<Consultant> Consultants { get; set; }
+        public DbSet<Product> Products { get; set; }
     }
 }
