@@ -7,9 +7,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MgebroStore.Data;
 using MgebroStore.Data.Entities;
-using MgebroStore.Models;
+using MgebroStore.Models.Sale;
 using MgebroStore.Models.Error;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace MgebroStore.Controllers
 {
@@ -22,28 +23,34 @@ namespace MgebroStore.Controllers
             _context = context;
         }
 
-        // GET: Sales
+
+
         public async Task<IActionResult> Index()
         {
             return View(await _context.Sales.ToListAsync());
         }
 
-        // GET: Sales/Details/5
+
+
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
+            var sale = await _context.Sales.FirstOrDefaultAsync(m => m.ID == id);
+            if (sale == null) return NotFound();
 
-            var sale = await _context.Sales
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (sale == null)
-            {
-                return NotFound();
-            }
+            var seller = JObject.Parse(sale.SellerInfo);
 
-            return View(sale);
+            SaleDetailsViewModel sd = new SaleDetailsViewModel();
+
+            sd.SaleDate = sale.SaleDate;
+            sd.TotalPrice = sale.TotalPrice;
+
+            sd.PID = seller["PID"].ToString();
+            sd.Seller = seller["FullName"].ToString();
+
+            sd.SoldItems = JsonConvert.DeserializeObject<List<SaleItem>>(sale.Description);
+
+            return View(sd);
         }
 
 
@@ -72,7 +79,7 @@ namespace MgebroStore.Controllers
             
             if (!sv.CastVariables())
             {
-                return View("GeneralError", new GeneralErrorViewModel { Text = "დაფიქსირდა შეცდომა მონაცემების დამშავებისას!" });
+                return View("GeneralError", new GeneralErrorViewModel { Text = "დაფიქსირდა შეცდომა მონაცემების დამუშავებისას!" });
             }
 
             if (sv.ProductIDs is null || sv.ProductIDs.Count == 0)
@@ -134,58 +141,60 @@ namespace MgebroStore.Controllers
             return View(sale);
         }
 
-        // GET: Sales/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var sale = await _context.Sales.FindAsync(id);
-            if (sale == null)
-            {
-                return NotFound();
-            }
-            return View(sale);
-        }
 
-        // POST: Sales/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,SaleDate,SellerInfo,Description")] Sale sale)
-        {
-            if (id != sale.ID)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(sale);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!SaleExists(sale.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(sale);
-        }
+        //    var sale = await _context.Sales.FindAsync(id);
+        //    if (sale == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return View(sale);
+        //}
 
-        // GET: Sales/Delete/5
+
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(int id, [Bind("ID,SaleDate,SellerInfo,Description")] Sale sale)
+        //{
+        //    if (id != sale.ID)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            _context.Update(sale);
+        //            await _context.SaveChangesAsync();
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            if (!SaleExists(sale.ID))
+        //            {
+        //                return NotFound();
+        //            }
+        //            else
+        //            {
+        //                throw;
+        //            }
+        //        }
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    return View(sale);
+        //}
+
+
+
+
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -203,7 +212,9 @@ namespace MgebroStore.Controllers
             return View(sale);
         }
 
-        // POST: Sales/Delete/5
+        
+
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -213,6 +224,8 @@ namespace MgebroStore.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+
 
         private bool SaleExists(int id)
         {
