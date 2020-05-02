@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MgebroStore.Models.Entities
+namespace MgebroStore.Data.Entities
 {
     public class Consultant
     {
@@ -31,12 +32,24 @@ namespace MgebroStore.Models.Entities
         public Gender Gender { get; set; }
 
         [Required(ErrorMessage = "გთხოვთ მიუთითოთ თარიღი")]
-        [DisplayName("დაბადების თარიღი")]
+        [DisplayName("დაბ. თარიღი")]
         [DataType(DataType.Date)]
         public DateTime Birthdate { get; set; }
 
         [DisplayName("რეკომენდატორი")]
-        public int Referral { get; set; } = 0;
+        public int ReferralID { get; set; }
+
+        [DisplayName("რეკომენდატორი")]
+        [NotMapped]
+        public string ReferralName { get; set; }
+
+
+
+        public string GetFullName()
+        {
+            return LastName + " " + FirstName;
+        }
+
     }
 
 

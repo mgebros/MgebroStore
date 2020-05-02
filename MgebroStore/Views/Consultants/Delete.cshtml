@@ -1,7 +1,7 @@
-﻿@model MgebroStore.Models.Entities.Consultant
+﻿@model MgebroStore.Data.Entities.Consultant
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "წაშლა";
 }
 
 <h1>წაშლა</h1>
@@ -42,10 +42,10 @@
             @Html.DisplayFor(model => model.Birthdate)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Referral)
+            @Html.DisplayNameFor(model => model.ReferralName)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Referral)
+            @Html.DisplayFor(model => model.ReferralName)
         </dd>
     </dl>
     

@@ -1,7 +1,7 @@
-﻿@model IEnumerable<MgebroStore.Models.Entities.Consultant>
+﻿@model IEnumerable<MgebroStore.Data.Entities.Consultant>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "ნუსხა";
 }
 
 <h1>კონსულტანტების ნუსხა</h1>
@@ -28,7 +28,7 @@
                 @Html.DisplayNameFor(model => model.Birthdate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Referral)
+                @Html.DisplayNameFor(model => model.ReferralName)
             </th>
             <th></th>
         </tr>
@@ -52,11 +52,11 @@
                 @Html.DisplayFor(modelItem => item.Birthdate)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Referral)
+                @Html.DisplayFor(modelItem => item.ReferralName)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ID">რედაქტირება</a> |
-                @*<a asp-action="Details" asp-route-id="@item.ID">დეტალები</a> |*@
+                <a asp-action="Details" asp-route-id="@item.ID">დეტალები</a> |
                 <a asp-action="Delete" asp-route-id="@item.ID">წაშლა</a>
             </td>
         </tr>
