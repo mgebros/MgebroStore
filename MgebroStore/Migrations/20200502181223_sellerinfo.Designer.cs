@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MgebroStore.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20200502113220_sale")]
-    partial class sale
+    [Migration("20200502181223_sellerinfo")]
+    partial class sellerinfo
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -80,6 +80,8 @@ namespace MgebroStore.Migrations
                     b.Property<DateTime>("SaleDate");
 
                     b.Property<string>("SellerInfo");
+
+                    b.Property<float>("TotalPrice");
 
                     b.HasKey("ID");
 

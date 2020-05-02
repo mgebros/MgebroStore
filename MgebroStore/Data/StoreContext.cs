@@ -26,6 +26,5 @@ namespace MgebroStore.Data
         public DbSet<Consultant> Consultants { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Sale> Sales { get; set; }
-        public DbSet<MgebroStore.Models.CreateSaleViewModel> CreateSaleViewModel { get; set; }
     }
 }

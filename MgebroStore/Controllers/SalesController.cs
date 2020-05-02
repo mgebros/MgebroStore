@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using MgebroStore.Data;
 using MgebroStore.Data.Entities;
 using MgebroStore.Models;
+using MgebroStore.Models.Error;
+using Newtonsoft.Json;
 
 namespace MgebroStore.Controllers
 {
@@ -48,25 +50,81 @@ namespace MgebroStore.Controllers
 
         public IActionResult Create()
         {
-            List<SelectListItem> refDict = new List<SelectListItem>();
-            refDict.Add(new SelectListItem("ცარიელი", "0"));
-            refDict.AddRange(_context.Consultants.Select(c => new SelectListItem { Value = c.ID.ToString(), Text = c.LastName + " " + c.FirstName }).ToList());
-            ViewBag.Referrals = refDict;
+            List<SelectListItem> selDict = new List<SelectListItem>();
+            selDict.AddRange(_context.Consultants.Select(c => new SelectListItem { Value = c.ID.ToString(), Text = c.LastName + " " + c.FirstName }).ToList());
+            ViewBag.Sellers = selDict;
 
-            CreateSaleViewModel vm = new CreateSaleViewModel();
+            List<SelectListItem> proDict = new List<SelectListItem>();
+            proDict.AddRange(_context.Products.Select(p => new SelectListItem { Value = p.ID.ToString(), Text = p.Title }).ToList());
+            ViewBag.Products = proDict;
+
+            //CreateSaleViewModel vm = new CreateSaleViewModel();
 
             return View();
         }
 
 
-
-        // POST: Sales/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,SaleDate,SalerInfo,Description")] Sale sale)
+        public async Task<IActionResult> Create([Bind("SellerID,ProductIDsText,ProductQuantityText")] CreateSaleViewModel sv)
         {
+            
+            if (!sv.CastVariables())
+            {
+                return View("GeneralError", new GeneralErrorViewModel { Text = "დაფიქსირდა შეცდომა მონაცემების დამშავებისას!" });
+            }
+
+            if (sv.ProductIDs is null || sv.ProductIDs.Count == 0)
+            {
+                return View("GeneralError", new GeneralErrorViewModel { Text = "თქვენ არ გაქვთ არჩეული პროდუქტი!" });
+            }
+
+            Sale sale = new Sale();
+
+            var consultant = _context.Consultants.FirstOrDefault(c => c.ID == sv.SellerID);
+
+            if(consultant == null)
+            {
+                return View("GeneralError", new GeneralErrorViewModel { Text = "კონსულტანტი ვერ მოიძებნა!" });
+            }
+
+
+
+            List<SaleItem> saleItems = new List<SaleItem>();
+
+
+
+            var products = _context.Products.Where(p => sv.ProductIDs.Contains(p.ID)).ToList();
+            float totalPrice = 0;
+
+            for(int i = 0; i < sv.ProductIDs.Count; i++)
+            {
+                var prod = products.FirstOrDefault(p => p.ID == sv.ProductIDs[i]);
+
+                saleItems.Add(new SaleItem()
+                {
+                    Code = prod.Code,
+                    Price = prod.Price,
+                    Title = prod.Title,
+                    Quantity = sv.ProductQuantity[i]
+                });
+
+                totalPrice += prod.Price * sv.ProductQuantity[i];
+            }
+
+            sale.TotalPrice = totalPrice;
+
+            var sellerInfo = new
+            {
+                PID = consultant.PID,
+                FullName = consultant.GetFullName()
+            };
+
+            sale.SellerInfo = JsonConvert.SerializeObject(sellerInfo);
+            sale.Description = JsonConvert.SerializeObject(saleItems);
+            sale.SaleDate = DateTime.Now;
+
             if (ModelState.IsValid)
             {
                 _context.Add(sale);
@@ -97,7 +155,7 @@ namespace MgebroStore.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,SaleDate,SalerInfo,Description")] Sale sale)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,SaleDate,SellerInfo,Description")] Sale sale)
         {
             if (id != sale.ID)
             {

@@ -15,7 +15,7 @@ namespace MgebroStore.Migrations
                     ID = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     SaleDate = table.Column<DateTime>(nullable: false),
-                    SalerInfo = table.Column<string>(nullable: true),
+                    SellerInfo = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true)
                 },
                 constraints: table =>

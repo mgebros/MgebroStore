@@ -8,32 +8,64 @@
 
 <h4>გაყიდვები</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Saler.ReferralName" class="control-label"></label>
-                @Html.DropDownListFor(model => model.Saler.ID,
-                                         (IEnumerable<SelectListItem>)ViewBag.Referrals, new { @class = "form-control" })
-                <span asp-validation-for="ReferralID" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SalerInfo" class="control-label"></label>
-                <input asp-for="SalerInfo" class="form-control" />
-                <span asp-validation-for="SalerInfo" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="დამატება" class="btn btn-primary" />
-            </div>
-        </form>
+@*<div class="row">
+    <div class="col-md-4">*@
+<form asp-action="Create">
+    <input type="hidden" value="" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+
+
+    <div class="form-group">
+        <label class="control-label">კალათა:</label>
+        <div id="cart">
+
+        </div>
     </div>
-</div>
+
+    
+
+    <div class="form-group">
+        <div class="row">
+
+            <div class="col-md-4">
+                <label class="control-label">პროდუქტი</label>
+                @Html.DropDownList("prod", (IEnumerable<SelectListItem>)ViewBag.Products, new { @class = "form-control" })
+                
+            </div>
+            <div class="col-md-2">
+                <label class="control-label">რაოდენობა</label>
+                <input class="form-control" type="number" id="prodCount" value="1" min="1" max="99999" step="1" />
+            </div>
+            <div class="col-md-2">
+                <label class="control-label">&nbsp;</label>
+                <input type="button" value="დამატება" class="form-control btn btn-primary" onclick="addToCart(prod, prodCount.value)" />
+            </div>
+
+            </div>
+        </div>
+     <br />
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label asp-for="SellerID" class="control-label"></label>
+                    @Html.DropDownListFor(model => model.SellerID,
+                                             (IEnumerable<SelectListItem>)ViewBag.Sellers, new { @class = "form-control" })
+                    <span asp-validation-for="SellerID" class="text-danger"></span>
+
+
+                </div>
+               
+
+                <div class="form-group">
+                    <input type="submit" value="დადასტურება" class="btn btn-primary" />
+                </div>
+            </div>
+        </div>
+</form>
+    @*</div>
+</div>*@
 
 <div>
     <a asp-action="Index">დაბრუნება</a>

@@ -77,7 +77,9 @@ namespace MgebroStore.Migrations
 
                     b.Property<DateTime>("SaleDate");
 
-                    b.Property<string>("SalerInfo");
+                    b.Property<string>("SellerInfo");
+
+                    b.Property<float>("TotalPrice");
 
                     b.HasKey("ID");
 

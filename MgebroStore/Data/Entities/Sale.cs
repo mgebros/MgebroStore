@@ -10,14 +10,21 @@ namespace MgebroStore.Data.Entities
     {
         public int ID { get; set; }
         public DateTime SaleDate { get; set; }
-        public string SalerInfo { get; set; }
+        public string SellerInfo { get; set; }
         public string Description { get; set; }
+        public float TotalPrice { get; set; }
 
-        [NotMapped]
-        public Consultant Saler { get; set; }
 
-        [NotMapped]
-        public List<Product> Products { get; set; }
+    }
 
+
+
+    [NotMapped]
+    public class SaleItem
+    {
+        public int Code { get; set; }   
+        public string Title { get; set; }
+        public float Price { get; set; }
+        public int Quantity { get; set; }
     }
 }
