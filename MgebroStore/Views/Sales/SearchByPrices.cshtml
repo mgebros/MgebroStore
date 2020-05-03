@@ -1,14 +1,14 @@
-﻿@model MgebroStore.Models.Sale.SearchByConsultantsViewModel
+﻿@model MgebroStore.Models.Sale.SearchByPricesViewModel
 
 @{
     ViewData["Title"] = "გაყიდვები";
 }
 
-<h1>ნუსხა</h1>
+<h1>ძიების შედეგები</h1>
 
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="SearchByConsultants">
+        <form asp-action="SearchByPrices">
             <div class="row">
                 <div class="col-md-4">
                     <div class="form-group">
@@ -22,14 +22,32 @@
                         <input type="date" name="ToDate" class="form-control" />
                     </div>
                 </div>
+                
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label">საწყისი ფასი</label>
+                        <input type="number" name="FromPrice" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label">საბოლოო ფასი</label>
+                        <input type="number" name="ToPrice" class="form-control" />
+                    </div>
+                </div>
                 <div class="col-md-4">
                     <div class="form-group">
                         <label class="control-label">&nbsp;</label>
                         <br />
                         <input type="submit" class="btn btn-primary" value="ძებნა" />
-                    </div>                    
+                    </div>
                 </div>
             </div>
+
+
+
         </form>
     </div>
 </div>
@@ -58,7 +76,7 @@
         @foreach (var item in Model.Items)
         {
             <tr>
-                <td>@Html.ActionLink(@item.ID.ToString(), "Details", "Sales",  new { id = item.ID })</td>
+                <td>@Html.ActionLink(@item.ID.ToString(), "Details", "Sales", new { id = item.ID })</td>
                 <td>@item.SaleDate</td>
                 <td>@item.FullName</td>
                 <td>@item.PID</td>
