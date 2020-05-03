@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using MgebroStore.Data;
 using MgebroStore.Data.Entities;
 using MgebroStore.Models.Error;
+using MgebroStore.Models.Consultant;
+using Newtonsoft.Json.Linq;
 
 namespace MgebroStore.Controllers
 {
@@ -214,5 +216,333 @@ namespace MgebroStore.Controllers
         {
             return _context.Consultants.Any(e => e.ID == id);
         }
+
+
+
+        //კონსულტანტები ხშირად გაყიდვადი პროდუქტების მიხედვით:
+        [HttpGet, ActionName("SearchByFrequentlySoldProducts")]
+        public async Task<IActionResult> SearchByFrequentlySoldProducts()
+        {
+            SearchByFrequentlySoldProductsViewModel vm = new SearchByFrequentlySoldProductsViewModel();
+            return View(vm);
+        }
+
+
+
+        class ProdQuantityPair
+        {
+            public int Code { get; set; }
+            public int Quantity { get; set; }
+        }
+
+        class PIDQuantityPair
+        {
+            public string PID { get; set; }
+            public int Quantity { get; set; }
+        }
+
+        //კონსულტანტები ხშირად გაყიდვადი პროდუქტების მიხედვით:
+        [HttpPost, ActionName("SearchByFrequentlySoldProducts")]
+        public async Task<IActionResult> SearchByFrequentlySoldProducts(SearchByFrequentlySoldProductsRequest req)
+        {
+            //  Include last day's sales
+            req.ToDate = req.ToDate.AddHours(23).AddMinutes(59).AddSeconds(59);
+
+            SearchByFrequentlySoldProductsViewModel vm = new SearchByFrequentlySoldProductsViewModel();
+
+
+
+            var pqp = new List<PIDQuantityPair>();
+
+            if (req.Code != 0)
+            {
+                //  Get sales in Date range
+
+                var sales = _context.Sales.Where(s => s.SaleDate >= req.FromDate && s.SaleDate <= req.ToDate).ToList();
+
+
+
+                //  Get All PID-Quantity pairs among sales
+
+                foreach (var sale in sales)
+                {
+                    var pid = JObject.Parse(sale.SellerInfo)["PID"].ToString();
+
+
+                    var exists = pqp.FirstOrDefault(pp => pp.PID == pid);
+
+                    if (exists == null) { 
+                        pqp.Add(new PIDQuantityPair()
+                        {
+                            PID = pid
+                        });
+                    }
+
+                    foreach (var jt in JArray.Parse(sale.Description).ToArray())
+                    {
+                        var code = int.Parse(jt["Code"].ToString());                        
+
+                        if(code == req.Code)
+                        {
+                            var quantity = int.Parse(jt["Quantity"].ToString());
+
+                            pqp.FirstOrDefault(pp => pp.PID == pid).Quantity += quantity;                            
+
+                            break;
+                        }                        
+                    }
+                }
+
+
+
+                // Filter by search code and quantity
+                pqp.RemoveAll(pp => pp.Quantity < req.MinQuantity);
+
+
+
+
+                //  Get Consultants by PIDs with minimum quantity and code
+                var pids = pqp.Select(p => p.PID).ToList();
+
+                var consultants = _context.Consultants.Where(c => pids.Contains(c.PID)).ToList();
+
+
+
+                //  Fill view model
+                foreach (var con in consultants)
+                {
+                    vm.Items.Add(new SearchByFrequentlySoldProductsItem()
+                    {
+                        Birthdate = con.Birthdate,
+                        Code = req.Code,
+                        FullName = con.GetFullName(),
+                        ID = con.ID,
+                        PID = con.PID,
+                        Quantity = pqp.FirstOrDefault(p => p.PID == con.PID).Quantity
+                    });
+                }
+
+                vm.TotalQuantity = vm.Items.Select(i => i.Quantity).Sum();
+
+            }
+            else
+            {
+                ////  Get sales in Date range
+
+                //var sales = _context.Sales.Where(s => s.SaleDate >= req.FromDate && s.SaleDate <= req.ToDate).ToList();
+
+
+
+                ////  Get All Code-Quantity pairs among sales to detect most sold product
+
+                //foreach (var sale in sales)
+                //{
+                //    foreach (var jt in JArray.Parse(sale.Description).ToArray())
+                //    {
+                //        var code = int.Parse(jt["Code"].ToString());
+                //        var quantity = int.Parse(jt["Quantity"].ToString());
+
+                //        var exists = pqp.FirstOrDefault(pp => pp.Code == code);
+
+                //        if (exists != null)
+                //        {
+                //            exists.Quantity += quantity;
+                //        }
+                //        else
+                //        {
+                //            pqp.Add(new ProdQuantityPair()
+                //            {
+                //                Code = code,
+                //                Quantity = quantity
+                //            });
+                //        }
+                //    }
+
+                //}
+
+
+                ////  Filter products by quantity
+                //pqp.RemoveAll(pp => pp.Quantity < req.MinQuantity || pp.Code != req.Code);
+
+                //pqp.OrderBy(pp => pp.Quantity);
+
+
+
+
+            }
+
+            
+
+
+            
+
+            return View(vm);
+        }
+
+
+
+        ////კონსულტანტები ჯამური გაყიდვების მიხედვით:
+        //[HttpGet, ActionName("SearchByFrequentlySoldProducts")]
+        //public async Task<IActionResult> SearchByTotalSales()
+        //{
+        //    SearchByFrequentlySoldProductsViewModel vm = new SearchByFrequentlySoldProductsViewModel();
+        //    return View(vm);
+        //}
+
+
+
+
+        //class ProdQuantityPair
+        //{
+        //    public int Code { get; set; }
+        //    public int Quantity { get; set; }
+        //}
+
+        //class PIDQuantityPair
+        //{
+        //    public string PID { get; set; }
+        //    public int Quantity { get; set; }
+        //}
+
+        ////კონსულტანტები ხშირად გაყიდვადი პროდუქტების მიხედვით:
+        //[HttpPost, ActionName("SearchByFrequentlySoldProducts")]
+        //public async Task<IActionResult> SearchByFrequentlySoldProducts(SearchByFrequentlySoldProductsRequest req)
+        //{
+        //    //  Include last day's sales
+        //    req.ToDate = req.ToDate.AddHours(23).AddMinutes(59).AddSeconds(59);
+
+        //    SearchByFrequentlySoldProductsViewModel vm = new SearchByFrequentlySoldProductsViewModel();
+
+
+
+        //    var pqp = new List<PIDQuantityPair>();
+
+        //    if (req.Code != 0)
+        //    {
+        //        //  Get sales in Date range
+
+        //        var sales = _context.Sales.Where(s => s.SaleDate >= req.FromDate && s.SaleDate <= req.ToDate).ToList();
+
+
+
+        //        //  Get All PID-Quantity pairs among sales
+
+        //        foreach (var sale in sales)
+        //        {
+        //            var pid = JObject.Parse(sale.SellerInfo)["PID"].ToString();
+
+
+        //            var exists = pqp.FirstOrDefault(pp => pp.PID == pid);
+
+        //            if (exists == null)
+        //            {
+        //                pqp.Add(new PIDQuantityPair()
+        //                {
+        //                    PID = pid
+        //                });
+        //            }
+
+        //            foreach (var jt in JArray.Parse(sale.Description).ToArray())
+        //            {
+        //                var code = int.Parse(jt["Code"].ToString());
+
+        //                if (code == req.Code)
+        //                {
+        //                    var quantity = int.Parse(jt["Quantity"].ToString());
+
+        //                    pqp.FirstOrDefault(pp => pp.PID == pid).Quantity += quantity;
+
+        //                    break;
+        //                }
+        //            }
+        //        }
+
+
+
+        //        // Filter by search code and quantity
+        //        pqp.RemoveAll(pp => pp.Quantity < req.MinQuantity);
+
+
+
+
+        //        //  Get Consultants by PIDs with minimum quantity and code
+        //        var pids = pqp.Select(p => p.PID).ToList();
+
+        //        var consultants = _context.Consultants.Where(c => pids.Contains(c.PID)).ToList();
+
+
+
+        //        //  Fill view model
+        //        foreach (var con in consultants)
+        //        {
+        //            vm.Items.Add(new SearchByFrequentlySoldProductsItem()
+        //            {
+        //                Birthdate = con.Birthdate,
+        //                Code = req.Code,
+        //                FullName = con.GetFullName(),
+        //                ID = con.ID,
+        //                PID = con.PID,
+        //                Quantity = pqp.FirstOrDefault(p => p.PID == con.PID).Quantity
+        //            });
+        //        }
+
+        //        vm.TotalQuantity = vm.Items.Select(i => i.Quantity).Sum();
+
+        //    }
+        //    else
+        //    {
+        //        ////  Get sales in Date range
+
+        //        //var sales = _context.Sales.Where(s => s.SaleDate >= req.FromDate && s.SaleDate <= req.ToDate).ToList();
+
+
+
+        //        ////  Get All Code-Quantity pairs among sales to detect most sold product
+
+        //        //foreach (var sale in sales)
+        //        //{
+        //        //    foreach (var jt in JArray.Parse(sale.Description).ToArray())
+        //        //    {
+        //        //        var code = int.Parse(jt["Code"].ToString());
+        //        //        var quantity = int.Parse(jt["Quantity"].ToString());
+
+        //        //        var exists = pqp.FirstOrDefault(pp => pp.Code == code);
+
+        //        //        if (exists != null)
+        //        //        {
+        //        //            exists.Quantity += quantity;
+        //        //        }
+        //        //        else
+        //        //        {
+        //        //            pqp.Add(new ProdQuantityPair()
+        //        //            {
+        //        //                Code = code,
+        //        //                Quantity = quantity
+        //        //            });
+        //        //        }
+        //        //    }
+
+        //        //}
+
+
+        //        ////  Filter products by quantity
+        //        //pqp.RemoveAll(pp => pp.Quantity < req.MinQuantity || pp.Code != req.Code);
+
+        //        //pqp.OrderBy(pp => pp.Quantity);
+
+
+
+
+        //    }
+
+
+
+
+
+
+        //    return View(vm);
+        //}
+
+
     }
 }

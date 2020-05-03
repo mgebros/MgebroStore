@@ -1,0 +1,101 @@
+﻿@model MgebroStore.Models.Consultant.SearchByFrequentlySoldProductsViewModel
+
+@{
+    ViewData["Title"] = "კონსულტანტები";
+}
+
+<h1>ძიების შედეგები</h1>
+
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="SearchByFrequentlySoldProductsViewModel">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label">საწყისი თარიღი</label>
+                        <input type="date" name="FromDate" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label">საბოლოო თარიღი</label>
+                        <input type="date" name="ToDate" class="form-control" />
+                    </div>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label">პროდუქტის კოდი</label>
+                        <input type="number" name="Code" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label">მინიმალური ოდენობა</label>
+                        <input type="number" name="MinQuantity" class="form-control" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="control-label">&nbsp;</label>
+                        <br />
+                        <input type="submit" class="btn btn-primary" value="ძებნა" />
+                    </div>
+                </div>
+            </div>
+
+
+
+        </form>
+    </div>
+</div>
+<br />
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Items[0].ID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Items[0].FullName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Items[0].PID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Items[0].Birthdate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Items[0].Code)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Items[0].Quantity)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                <td>@Html.ActionLink(@item.ID.ToString(), "Details", "Consultants", new { id = item.ID })</td>
+                <td>@item.FullName</td>
+                <td>@item.PID</td>
+                <td>@item.Birthdate</td>
+                <td>@item.Code</td>
+                <td>@item.Quantity</td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>ჯამი</td>
+            <td>@Model.TotalQuantity</td>
+        </tr>
+    </tfoot>
+</table>
