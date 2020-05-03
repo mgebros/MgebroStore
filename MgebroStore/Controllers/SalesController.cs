@@ -77,7 +77,7 @@ namespace MgebroStore.Controllers
         public async Task<IActionResult> Create([Bind("SellerID,ProductIDsText,ProductQuantityText")] CreateSaleViewModel sv)
         {
             
-            if (!sv.CastVariables())
+            if (string.IsNullOrEmpty(sv.ProductIDsText) || !sv.CastVariables())
             {
                 return View("GeneralError", new GeneralErrorViewModel { Text = "დაფიქსირდა შეცდომა მონაცემების დამუშავებისას!" });
             }
@@ -231,5 +231,62 @@ namespace MgebroStore.Controllers
         {
             return _context.Sales.Any(e => e.ID == id);
         }
+
+
+
+        //გაყიდვები კონსულტანტების მიხედვით:
+        [HttpGet, ActionName("SearchByConsultants")]
+        public async Task<IActionResult> SearchByConsultants()
+        {
+            SearchByConsultantsViewModel vm = new SearchByConsultantsViewModel();
+
+
+            return View(vm);
+        }
+
+
+
+        //გაყიდვები კონსულტანტების მიხედვით:
+        [HttpPost, ActionName("SearchByConsultants")]
+        public async Task<IActionResult> SearchByConsultants(SearchByConsultantsRequest req)
+        {
+            //  Include last day's sales
+            if (req.ToDate.HasValue)
+            {
+                req.ToDate = req.ToDate.Value.AddHours(23).AddMinutes(59).AddSeconds(59);
+            }
+
+
+            SearchByConsultantsViewModel vm = new SearchByConsultantsViewModel();
+
+            var sales = _context.Sales.Where(s => s.SaleDate >= req.FromDate && s.SaleDate <= req.ToDate).ToList();
+
+            foreach (var sale in sales)
+            {
+                var seller = JObject.Parse(sale.SellerInfo);
+
+                vm.Items.Add(new SearchByConsultantsItem()
+                {
+                    ID = sale.ID,
+                    SaleDate = sale.SaleDate,
+                    FullName = seller["FullName"].ToString(),
+                    PID = seller["PID"].ToString(),
+                    TotalPrice = sale.TotalPrice
+                });
+            }
+
+            vm.TotalPrice = vm.Items.Select(i => i.TotalPrice).Sum();
+
+            return View(vm);
+        }
+
+
+
+
+
+
+
+
+
     }
 }
