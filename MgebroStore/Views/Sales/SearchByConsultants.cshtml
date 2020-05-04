@@ -8,18 +8,18 @@
 
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="SearchByConsultants">
+        <form asp-action="SearchByConsultants" method="get">
             <div class="row">
                 <div class="col-md-4">
                     <div class="form-group">
                         <label class="control-label">საწყისი თარიღი</label>
-                        <input type="date" name="FromDate" class="form-control" />
+                        <input type="date" name="FromDate" class="form-control" value="@Model.FromDate" />
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="form-group">
                         <label class="control-label">საბოლოო თარიღი</label>
-                        <input type="date" name="ToDate" class="form-control" />
+                        <input type="date" name="ToDate" class="form-control" value="@Model.ToDate" />
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -27,7 +27,7 @@
                         <label class="control-label">&nbsp;</label>
                         <br />
                         <input type="submit" class="btn btn-primary" value="ძებნა" />
-                    </div>                    
+                    </div>
                 </div>
             </div>
         </form>
@@ -58,7 +58,7 @@
         @foreach (var item in Model.Items)
         {
             <tr>
-                <td>@Html.ActionLink(@item.ID.ToString(), "Details", "Sales",  new { id = item.ID })</td>
+                <td>@Html.ActionLink(@item.ID.ToString(), "Details", "Sales", new { id = item.ID })</td>
                 <td>@item.SaleDate</td>
                 <td>@item.FullName</td>
                 <td>@item.PID</td>
@@ -76,3 +76,5 @@
         </tr>
     </tfoot>
 </table>
+
+@Html.Partial("~/Views/Shared/PaginationPartial.cshtml", new ActionControllerPair { Action = "SearchByConsultants", Controller = "Sales" })

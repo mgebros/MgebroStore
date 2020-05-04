@@ -243,16 +243,6 @@ namespace MgebroStore.Controllers
 
         //გაყიდვები კონსულტანტების მიხედვით:
         [HttpGet, ActionName("SearchByConsultants")]
-        public async Task<IActionResult> SearchByConsultants()
-        {
-            SearchByConsultantsViewModel vm = new SearchByConsultantsViewModel();
-            return View(vm);
-        }
-
-
-
-        //გაყიდვები კონსულტანტების მიხედვით:
-        [HttpPost, ActionName("SearchByConsultants")]
         public async Task<IActionResult> SearchByConsultants(SearchByConsultantsRequest req)
         {
             //  Include last day's sales
@@ -280,7 +270,23 @@ namespace MgebroStore.Controllers
                 });
             }
 
+
+            
+            ViewBag.Page = req.Page;
+            ViewBag.PagesCount = Math.Ceiling(decimal.Divide(vm.Items.Count, req.Pagesize));
+            vm.Items = vm.Items.Page(req.Page, req.Pagesize).ToList();
+
+
             vm.TotalPrice = vm.Items.Select(i => i.TotalPrice).Sum();
+
+            ViewBag.QueryString = "";
+            if (Request.QueryString.HasValue)
+            {
+                foreach(var q in Request.Query)
+                    ViewBag.QueryString += q.Key + "=" + q.Value.ToString().Split(',')[0] + "&";
+            }
+
+
 
             return View(vm);
         }
