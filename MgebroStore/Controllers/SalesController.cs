@@ -11,6 +11,7 @@ using MgebroStore.Models.Sale;
 using MgebroStore.Models.Error;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using MgebroStore.Helpers;
 
 namespace MgebroStore.Controllers
 {
@@ -25,9 +26,15 @@ namespace MgebroStore.Controllers
 
 
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(IndexRequest req)
         {
-            return View(await _context.Sales.ToListAsync());
+            var sales = await _context.Sales.ToListAsync();
+            sales = sales.Page(req.Page, req.Pagesize).ToList();
+
+            ViewBag.Page = req.Page;
+            ViewBag.PagesCount = Math.Ceiling(decimal.Divide(await _context.Sales.CountAsync(), req.Pagesize));
+
+            return View(sales);
         }
 
 
