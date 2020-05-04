@@ -1,4 +1,4 @@
-﻿@model MgebroStore.Models.Consultant.SearchByFrequentlySoldProductsViewModel
+﻿@model MgebroStore.Models.Consultant.SearchByTotalSalesViewModel
 
 @{
     ViewData["Title"] = "კონსულტანტები";
@@ -8,7 +8,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="SearchByFrequentlySoldProducts">
+        <form asp-action="SearchByTotalSales">
             <div class="row">
                 <div class="col-md-4">
                     <div class="form-group">
@@ -22,21 +22,8 @@
                         <input type="date" name="ToDate" class="form-control" />
                     </div>
                 </div>
-
             </div>
             <div class="row">
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label class="control-label">პროდუქტის კოდი</label>
-                        <input type="number" name="Code" class="form-control" />
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-group">
-                        <label class="control-label">მინიმალური ოდენობა</label>
-                        <input type="number" name="MinQuantity" class="form-control" />
-                    </div>
-                </div>
                 <div class="col-md-4">
                     <div class="form-group">
                         <label class="control-label">&nbsp;</label>
@@ -45,9 +32,6 @@
                     </div>
                 </div>
             </div>
-
-
-
         </form>
     </div>
 </div>
@@ -68,10 +52,10 @@
                 @Html.DisplayNameFor(model => model.Items[0].Birthdate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Items[0].Code)
+                @Html.DisplayNameFor(model => model.Items[0].TotalSales)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Items[0].Quantity)
+                @Html.DisplayNameFor(model => model.Items[0].HierarchicalTotalSales)
             </th>
         </tr>
     </thead>
@@ -83,8 +67,8 @@
                 <td>@item.FullName</td>
                 <td>@item.PID</td>
                 <td>@item.Birthdate</td>
-                <td>@item.Code</td>
-                <td>@item.Quantity</td>
+                <td>@item.TotalSales</td>
+                <td>@item.HierarchicalTotalSales</td>
             </tr>
         }
     </tbody>
@@ -93,9 +77,9 @@
             <td></td>
             <td></td>
             <td></td>
-            <td></td>
             <td>ჯამი</td>
-            <td>@Model.TotalQuantity</td>
+            <td>@Model.TotalSales</td>
+            <td>@Model.HierarchicalTotalSales</td>
         </tr>
     </tfoot>
 </table>

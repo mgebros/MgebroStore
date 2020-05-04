@@ -2,20 +2,20 @@
 
 namespace MgebroStore.Migrations
 {
-    public partial class referralid : Migration
+    public partial class ReferrerID : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.RenameColumn(
                 name: "Referral",
                 table: "Consultants",
-                newName: "ReferralID");
+                newName: "ReferrerID");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.RenameColumn(
-                name: "ReferralID",
+                name: "ReferrerID",
                 table: "Consultants",
                 newName: "Referral");
         }

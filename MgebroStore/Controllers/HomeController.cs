@@ -12,7 +12,7 @@ namespace MgebroStore.Controllers
     {
         public IActionResult Index()
         {
-            return RedirectToAction("SearchByFrequentlySoldProducts", "Consultants");
+            return RedirectToAction("SearchByTotalSales", "Consultants");
             //return View();
         }
 

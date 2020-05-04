@@ -10,7 +10,7 @@ namespace MgebroStore.Models.Consultant
     {
         public List<SearchByFrequentlySoldProductsItem> Items { get; set; } = new List<SearchByFrequentlySoldProductsItem>();
 
-        [DisplayName("ჯამური თანხა")]
+        [DisplayName("ჯამური ოდენობა")]
         public float TotalQuantity { get; set; }
     }
 
@@ -34,5 +34,17 @@ namespace MgebroStore.Models.Consultant
 
         [DisplayName("რაოდენობა")]
         public float Quantity { get; set; }
+    }
+
+    class ProdQuantityPair
+    {
+        public int Code { get; set; }
+        public int Quantity { get; set; }
+    }
+
+    class PIDQuantityPair
+    {
+        public string PID { get; set; }
+        public int Quantity { get; set; }
     }
 }

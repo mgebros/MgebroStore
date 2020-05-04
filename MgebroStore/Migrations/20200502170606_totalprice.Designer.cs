@@ -43,7 +43,7 @@ namespace MgebroStore.Migrations
                         .IsRequired()
                         .HasMaxLength(11);
 
-                    b.Property<int>("ReferralID");
+                    b.Property<int>("ReferrerID");
 
                     b.HasKey("ID");
 

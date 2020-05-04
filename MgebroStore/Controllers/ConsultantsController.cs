@@ -10,6 +10,7 @@ using MgebroStore.Data.Entities;
 using MgebroStore.Models.Error;
 using MgebroStore.Models.Consultant;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace MgebroStore.Controllers
 {
@@ -28,8 +29,8 @@ namespace MgebroStore.Controllers
         {
             foreach (var con in cons)
             {
-                if (con.ReferralID != 0)
-                    con.ReferralName = cons.FirstOrDefault(c => c.ID == con.ReferralID).GetFullName();
+                if (con.ReferrerID != 0)
+                    con.ReferralName = cons.FirstOrDefault(c => c.ID == con.ReferrerID).GetFullName();
                 else
                     con.ReferralName = "ცარიელი";
             }
@@ -37,8 +38,8 @@ namespace MgebroStore.Controllers
 
         private void FillReferralName(Consultant con)
         {
-            if (con.ReferralID != 0)
-                con.ReferralName = _context.Consultants.FirstOrDefault(c => c.ID == con.ReferralID).GetFullName();
+            if (con.ReferrerID != 0)
+                con.ReferralName = _context.Consultants.FirstOrDefault(c => c.ID == con.ReferrerID).GetFullName();
             else
                 con.ReferralName = "ცარიელი";
         }
@@ -94,13 +95,13 @@ namespace MgebroStore.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,FirstName,LastName,PID,Gender,Birthdate,ReferralID")] Consultant consultant)
+        public async Task<IActionResult> Create([Bind("ID,FirstName,LastName,PID,Gender,Birthdate,ReferrerID")] Consultant consultant)
         {
-            if (consultant.ReferralID != 0) {
-                var exists = _context.Consultants.FirstOrDefault(c => c.ID == consultant.ReferralID);
+            if (consultant.ReferrerID != 0) {
+                var exists = _context.Consultants.FirstOrDefault(c => c.ID == consultant.ReferrerID);
 
                 if (exists is null)
-                    consultant.ReferralID = 0;
+                    consultant.ReferrerID = 0;
             }
 
             if (ModelState.IsValid)
@@ -133,16 +134,16 @@ namespace MgebroStore.Controllers
         
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,FirstName,LastName,PID,Gender,Birthdate,ReferralID")] Consultant consultant)
+        public async Task<IActionResult> Edit(int id, [Bind("ID,FirstName,LastName,PID,Gender,Birthdate,ReferrerID")] Consultant consultant)
         {
             //  Restrict being of self referral
-            if (consultant.ID == consultant.ReferralID)
+            if (consultant.ID == consultant.ReferrerID)
             {
                 return View("GeneralError", new GeneralErrorViewModel { Text = "კონსულტანტი საკუთარი თავის რეკომენდატორი არ უნდა იყოს!" });
             }
 
             //  Restrict being referral of your referrals
-            var gettingReferralOfYourReferal = _context.Consultants.Where(c => c.ReferralID == consultant.ID).Any(c => c.ID == consultant.ReferralID);
+            var gettingReferralOfYourReferal = _context.Consultants.Where(c => c.ReferrerID == consultant.ID).Any(c => c.ID == consultant.ReferrerID);
 
             if (gettingReferralOfYourReferal)
             {
@@ -203,9 +204,9 @@ namespace MgebroStore.Controllers
             var consultant = await _context.Consultants.FindAsync(id);
             _context.Consultants.Remove(consultant);
 
-            _context.Consultants.Where(c => c.ReferralID == id).ToList().ForEach(c =>
+            _context.Consultants.Where(c => c.ReferrerID == id).ToList().ForEach(c =>
               {
-                  c.ReferralID = 0;
+                  c.ReferrerID = 0;
               });
 
             await _context.SaveChangesAsync();
@@ -228,18 +229,6 @@ namespace MgebroStore.Controllers
         }
 
 
-
-        class ProdQuantityPair
-        {
-            public int Code { get; set; }
-            public int Quantity { get; set; }
-        }
-
-        class PIDQuantityPair
-        {
-            public string PID { get; set; }
-            public int Quantity { get; set; }
-        }
 
         //კონსულტანტები ხშირად გაყიდვადი პროდუქტების მიხედვით:
         [HttpPost, ActionName("SearchByFrequentlySoldProducts")]
@@ -381,167 +370,124 @@ namespace MgebroStore.Controllers
 
 
 
-        ////კონსულტანტები ჯამური გაყიდვების მიხედვით:
-        //[HttpGet, ActionName("SearchByFrequentlySoldProducts")]
-        //public async Task<IActionResult> SearchByTotalSales()
-        //{
-        //    SearchByFrequentlySoldProductsViewModel vm = new SearchByFrequentlySoldProductsViewModel();
-        //    return View(vm);
-        //}
+        //კონსულტანტები ჯამური გაყიდვების მიხედვით:
+        [HttpGet, ActionName("SearchByTotalSales")]
+        public async Task<IActionResult> SearchByTotalSales()
+        {
+            SearchByTotalSalesViewModel vm = new SearchByTotalSalesViewModel();
+            return View(vm);
+        }
+
+
+        class ConsultantItem
+        {
+            public int ID { get; set; }
+            public int ReferrerID { get; set; }
+            public string PID { get; set; }
+            public List<ConsultantItem> Referrals { get; set; } = new List<ConsultantItem>();
+            public float TotalSales { get; set; }
+            public float HierarchicalTotalSales { get; set; }
+
+
+            public List<ConsultantItem> GetAllReferrals(ConsultantItem cItem, List<ConsultantItem> list)
+            {
+                List<ConsultantItem> children = new List<ConsultantItem>();
+                var referrals = list.Where(i => i.ReferrerID == cItem.ID).ToList();
+
+                if (referrals != null & referrals.Count != 0)
+                {
+                    children.AddRange(referrals);
+
+                    foreach (var referral in referrals)
+                        children.AddRange(GetAllReferrals(referral, list));
+                }
+
+                return children;
+            }
+
+        }
+
+
+        //კონსულტანტები ჯამური გაყიდვების მიხედვით:
+        [HttpPost, ActionName("SearchByTotalSales")]
+        public async Task<IActionResult> SearchByTotalSales(SearchByTotalSalesRequest req)
+        {
+            //  Include last day's sales
+            //req.ToDate = req.ToDate.AddHours(23).AddMinutes(59).AddSeconds(59);
+
+            SearchByTotalSalesViewModel vm = new SearchByTotalSalesViewModel();
 
 
 
+            var consultants = _context.Consultants.ToList();
 
-        //class ProdQuantityPair
-        //{
-        //    public int Code { get; set; }
-        //    public int Quantity { get; set; }
-        //}
-
-        //class PIDQuantityPair
-        //{
-        //    public string PID { get; set; }
-        //    public int Quantity { get; set; }
-        //}
-
-        ////კონსულტანტები ხშირად გაყიდვადი პროდუქტების მიხედვით:
-        //[HttpPost, ActionName("SearchByFrequentlySoldProducts")]
-        //public async Task<IActionResult> SearchByFrequentlySoldProducts(SearchByFrequentlySoldProductsRequest req)
-        //{
-        //    //  Include last day's sales
-        //    req.ToDate = req.ToDate.AddHours(23).AddMinutes(59).AddSeconds(59);
-
-        //    SearchByFrequentlySoldProductsViewModel vm = new SearchByFrequentlySoldProductsViewModel();
+            List<ConsultantItem> cis = new List<ConsultantItem>();
 
 
+            //  Map with original consultants for ID, ReferralID and PID
+            foreach(var con in consultants)
+            {
+                cis.Add(new ConsultantItem()
+                {
+                    ID = con.ID,
+                    PID = con.PID,
+                    ReferrerID = con.ReferrerID
+                });
+            }
 
-        //    var pqp = new List<PIDQuantityPair>();
 
-        //    if (req.Code != 0)
-        //    {
-        //        //  Get sales in Date range
+          
 
-        //        var sales = _context.Sales.Where(s => s.SaleDate >= req.FromDate && s.SaleDate <= req.ToDate).ToList();
+            foreach(var ci in cis)
+                ci.Referrals = ci.GetAllReferrals(ci, cis);
+
+
+            //  Get PID and TotalSales from base
+            var sales = _context.Sales.Where(s => s.SaleDate >= req.FromDate && s.SaleDate <= req.ToDate)
+                    .Select(s => new {
+                        PID = JObject.Parse(s.SellerInfo)["PID"].ToString(),
+                        TotalPrice = s.TotalPrice
+                    }).ToList();
 
 
 
-        //        //  Get All PID-Quantity pairs among sales
-
-        //        foreach (var sale in sales)
-        //        {
-        //            var pid = JObject.Parse(sale.SellerInfo)["PID"].ToString();
-
-
-        //            var exists = pqp.FirstOrDefault(pp => pp.PID == pid);
-
-        //            if (exists == null)
-        //            {
-        //                pqp.Add(new PIDQuantityPair()
-        //                {
-        //                    PID = pid
-        //                });
-        //            }
-
-        //            foreach (var jt in JArray.Parse(sale.Description).ToArray())
-        //            {
-        //                var code = int.Parse(jt["Code"].ToString());
-
-        //                if (code == req.Code)
-        //                {
-        //                    var quantity = int.Parse(jt["Quantity"].ToString());
-
-        //                    pqp.FirstOrDefault(pp => pp.PID == pid).Quantity += quantity;
-
-        //                    break;
-        //                }
-        //            }
-        //        }
+            //  Map with Sales for TotalSales
+            foreach (var sale in sales)
+                cis.FirstOrDefault(ci => ci.PID == sale.PID).TotalSales += sale.TotalPrice;
 
 
 
-        //        // Filter by search code and quantity
-        //        pqp.RemoveAll(pp => pp.Quantity < req.MinQuantity);
+            //  Set Hierarchical TotalSales
+            foreach (var ci in cis)
+                ci.HierarchicalTotalSales = ci.Referrals.Select(r => r.TotalSales).Sum() + ci.TotalSales;
 
 
+            //  Delete excess consultants
+            cis.RemoveAll(ci => !sales.Select(s => s.PID).Contains(ci.PID));
 
 
-        //        //  Get Consultants by PIDs with minimum quantity and code
-        //        var pids = pqp.Select(p => p.PID).ToList();
+            //  Fill ViewModel
+            foreach(var ci in cis)
+            {
+                var con = consultants.FirstOrDefault(c => c.ID == ci.ID);
 
-        //        var consultants = _context.Consultants.Where(c => pids.Contains(c.PID)).ToList();
+                vm.Items.Add(new SearchByTotalSalesItem()
+                {
+                    ID = ci.ID,
+                    FullName = con.GetFullName(),
+                    Birthdate = con.Birthdate,
+                    PID = ci.PID,
+                    TotalSales = ci.TotalSales,
+                    HierarchicalTotalSales = ci.HierarchicalTotalSales
+                });
+            }
 
-
-
-        //        //  Fill view model
-        //        foreach (var con in consultants)
-        //        {
-        //            vm.Items.Add(new SearchByFrequentlySoldProductsItem()
-        //            {
-        //                Birthdate = con.Birthdate,
-        //                Code = req.Code,
-        //                FullName = con.GetFullName(),
-        //                ID = con.ID,
-        //                PID = con.PID,
-        //                Quantity = pqp.FirstOrDefault(p => p.PID == con.PID).Quantity
-        //            });
-        //        }
-
-        //        vm.TotalQuantity = vm.Items.Select(i => i.Quantity).Sum();
-
-        //    }
-        //    else
-        //    {
-        //        ////  Get sales in Date range
-
-        //        //var sales = _context.Sales.Where(s => s.SaleDate >= req.FromDate && s.SaleDate <= req.ToDate).ToList();
+            vm.TotalSales = vm.Items.Select(i => i.TotalSales).Sum();
+            vm.HierarchicalTotalSales = vm.Items.Select(i => i.HierarchicalTotalSales).Sum();
 
 
-
-        //        ////  Get All Code-Quantity pairs among sales to detect most sold product
-
-        //        //foreach (var sale in sales)
-        //        //{
-        //        //    foreach (var jt in JArray.Parse(sale.Description).ToArray())
-        //        //    {
-        //        //        var code = int.Parse(jt["Code"].ToString());
-        //        //        var quantity = int.Parse(jt["Quantity"].ToString());
-
-        //        //        var exists = pqp.FirstOrDefault(pp => pp.Code == code);
-
-        //        //        if (exists != null)
-        //        //        {
-        //        //            exists.Quantity += quantity;
-        //        //        }
-        //        //        else
-        //        //        {
-        //        //            pqp.Add(new ProdQuantityPair()
-        //        //            {
-        //        //                Code = code,
-        //        //                Quantity = quantity
-        //        //            });
-        //        //        }
-        //        //    }
-
-        //        //}
-
-
-        //        ////  Filter products by quantity
-        //        //pqp.RemoveAll(pp => pp.Quantity < req.MinQuantity || pp.Code != req.Code);
-
-        //        //pqp.OrderBy(pp => pp.Quantity);
-
-
-
-
-        //    }
-
-
-
-
-
-
-        //    return View(vm);
-        //}
+            return View(vm);
+        }
 
 
     }

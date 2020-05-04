@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MgebroStore.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    [Migration("20200501150634_referralid")]
-    partial class referralid
+    [Migration("20200501150634_ReferrerID")]
+    partial class ReferrerID
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -43,7 +43,7 @@ namespace MgebroStore.Migrations
                         .IsRequired()
                         .HasMaxLength(11);
 
-                    b.Property<int>("ReferralID");
+                    b.Property<int>("ReferrerID");
 
                     b.HasKey("ID");
 

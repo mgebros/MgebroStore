@@ -39,10 +39,10 @@
                 <span asp-validation-for="Birthdate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="ReferralID" class="control-label"></label>
-                @Html.DropDownListFor(model => model.ReferralID,
+                <label asp-for="ReferrerID" class="control-label"></label>
+                @Html.DropDownListFor(model => model.ReferrerID,
                                          (IEnumerable<SelectListItem>)ViewBag.Referrals, new { @class = "form-control" })
-                <span asp-validation-for="ReferralID" class="text-danger"></span>
+                <span asp-validation-for="ReferrerID" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="შენახვა" class="btn btn-primary" />

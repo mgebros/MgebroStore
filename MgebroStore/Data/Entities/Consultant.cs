@@ -39,7 +39,7 @@ namespace MgebroStore.Data.Entities
         public DateTime Birthdate { get; set; }
 
         [DisplayName("რეკომენდატორი")]
-        public int ReferralID { get; set; }
+        public int ReferrerID { get; set; }
 
         [DisplayName("რეკომენდატორი")]
         [NotMapped]
