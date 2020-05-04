@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MgebroStore.Models.Consultant
 {
-    public class SearchByFrequentlySoldProductsRequest
+    public class SearchByFrequentlySoldProductsRequest : IPagination
     {
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }

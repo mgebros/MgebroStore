@@ -8,7 +8,7 @@
 
 <div class="row">
     <div class="col-md-12">
-        <form asp-action="SearchByFrequentlySoldProducts">
+        <form asp-action="SearchByFrequentlySoldProducts" method="get">
             <div class="row">
                 <div class="col-md-4">
                     <div class="form-group">
@@ -99,3 +99,5 @@
         </tr>
     </tfoot>
 </table>
+
+@Html.Partial("~/Views/Shared/PaginationPartial.cshtml", new ActionControllerPair { Action = "SearchByFrequentlySoldProducts", Controller = "Consultants" })
