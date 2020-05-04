@@ -1,0 +1,25 @@
+﻿<div class="text-center">
+    <ul class="pagination text-center">
+        <li class="page-item @if (ViewBag.Page == 1) { <text>disabled</text> }">
+            <a class="page-link" href="@Url.Action("Index", "Consultants", new { Page = ViewBag.Page - 1, PagesCount = ViewBag.PagesCount })">წინა</a>
+        </li>
+        @for (int i = 1; i <= ViewBag.PagesCount; i++)
+        {
+            @if (ViewBag.Page == i)
+            {
+                <li class="page-item active">
+                    <a class="page-link" href="#">@ViewBag.Page<span class="sr-only">(current)</span></a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", "Consultants", new { Page = i, PagesCount = ViewBag.PagesCount })">@i</a>
+                </li>
+            }
+        }
+        <li class="page-item @if (ViewBag.Page == ViewBag.PagesCount) { <text>disabled</text> }">
+            <a class="page-link" href="@Url.Action("Index", "Consultants", new { Page = ViewBag.Page + 1, PagesCount = ViewBag.PagesCount })">შემდეგი</a>
+        </li>
+    </ul>
+</div>

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<MgebroStore.Data.Entities.Consultant>
+﻿@model MgebroStore.Models.Consultant.IndexViewModel
 
 @{
     ViewData["Title"] = "ნუსხა";
@@ -13,28 +13,28 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.FirstName)
+                @Html.DisplayNameFor(model => model.Consultants[0].FirstName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LastName)
+                @Html.DisplayNameFor(model => model.Consultants[0].LastName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PID)
+                @Html.DisplayNameFor(model => model.Consultants[0].PID)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Gender)
+                @Html.DisplayNameFor(model => model.Consultants[0].Gender)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Birthdate)
+                @Html.DisplayNameFor(model => model.Consultants[0].Birthdate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ReferralName)
+                @Html.DisplayNameFor(model => model.Consultants[0].ReferralName)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.Consultants) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.FirstName)
@@ -63,3 +63,5 @@
 }
     </tbody>
 </table>
+
+@Html.Partial("~/Views/Shared/PaginationPartial.cshtml")

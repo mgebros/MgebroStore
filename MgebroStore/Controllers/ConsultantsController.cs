@@ -11,6 +11,8 @@ using MgebroStore.Models.Error;
 using MgebroStore.Models.Consultant;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using MgebroStore.Helpers;
 
 namespace MgebroStore.Controllers
 {
@@ -25,7 +27,7 @@ namespace MgebroStore.Controllers
 
 
 
-        private void FillReferralNames(List<Consultant> cons)
+        private void FillReferrerNames(List<Consultant> cons)
         {
             foreach (var con in cons)
             {
@@ -36,7 +38,7 @@ namespace MgebroStore.Controllers
             }
         }
 
-        private void FillReferralName(Consultant con)
+        private void FillReferrerName(Consultant con)
         {
             if (con.ReferrerID != 0)
                 con.ReferralName = _context.Consultants.FirstOrDefault(c => c.ID == con.ReferrerID).GetFullName();
@@ -46,15 +48,20 @@ namespace MgebroStore.Controllers
 
 
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(IndexRequest req)
         {
-
             var cons = await _context.Consultants.ToListAsync();
-            FillReferralNames(cons);
+
+            FillReferrerNames(cons);
 
 
+            IndexViewModel vm = new IndexViewModel();
+            vm.Consultants = cons.Page(req.Page, req.Pagesize).ToList();
 
-            return View(cons);
+            ViewBag.Page = req.Page;
+            ViewBag.PagesCount = Math.Ceiling(decimal.Divide(await _context.Consultants.CountAsync(), req.Pagesize));
+
+            return View(vm);
         }
 
 
@@ -69,7 +76,7 @@ namespace MgebroStore.Controllers
             var consultant = await _context.Consultants
                 .FirstOrDefaultAsync(m => m.ID == id);
 
-            FillReferralName(consultant);
+            FillReferrerName(consultant);
 
             if (consultant == null)
             {
@@ -102,6 +109,14 @@ namespace MgebroStore.Controllers
 
                 if (exists is null)
                     consultant.ReferrerID = 0;
+            }
+
+            var exists2 = _context.Consultants.FirstOrDefaultAsync(c => c.PID == consultant.PID);
+
+            if(exists2 != null)
+            {
+                return View("GeneralError", new GeneralErrorViewModel { Text = "ამ პირადობით მომხმარებელი უკვე რეგისტრირებულია!" });
+
             }
 
             if (ModelState.IsValid)
@@ -185,7 +200,7 @@ namespace MgebroStore.Controllers
             var consultant = await _context.Consultants
                 .FirstOrDefaultAsync(m => m.ID == id);
 
-            FillReferralName(consultant);
+            FillReferrerName(consultant);
 
             if (consultant == null)
             {

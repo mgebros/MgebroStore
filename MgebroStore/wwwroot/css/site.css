@@ -83,3 +83,9 @@ a {
 .bg-orange a:hover{
     color: #ffffff !important;
 }
+
+.page-item.active .page-link {
+    color: #ffffff !important;
+    background-color: #ff600a !important;
+    border-color: #fec2a3 !important;
+}
