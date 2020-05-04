@@ -51,17 +51,13 @@ namespace MgebroStore.Controllers
         public async Task<IActionResult> Index(IndexRequest req)
         {
             var cons = await _context.Consultants.ToListAsync();
-
             FillReferrerNames(cons);
-
-
-            IndexViewModel vm = new IndexViewModel();
-            vm.Consultants = cons.Page(req.Page, req.Pagesize).ToList();
+            cons = cons.Page(req.Page, req.Pagesize).ToList();
 
             ViewBag.Page = req.Page;
             ViewBag.PagesCount = Math.Ceiling(decimal.Divide(await _context.Consultants.CountAsync(), req.Pagesize));
 
-            return View(vm);
+            return View(cons);
         }
 
 

@@ -1,4 +1,4 @@
-﻿@model MgebroStore.Models.Consultant.IndexViewModel
+﻿@model IEnumerable<MgebroStore.Data.Entities.Consultant>
 
 @{
     ViewData["Title"] = "ნუსხა";
@@ -13,55 +13,57 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Consultants[0].FirstName)
+                @Html.DisplayNameFor(model => model.FirstName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Consultants[0].LastName)
+                @Html.DisplayNameFor(model => model.LastName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Consultants[0].PID)
+                @Html.DisplayNameFor(model => model.PID)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Consultants[0].Gender)
+                @Html.DisplayNameFor(model => model.Gender)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Consultants[0].Birthdate)
+                @Html.DisplayNameFor(model => model.Birthdate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Consultants[0].ReferralName)
+                @Html.DisplayNameFor(model => model.ReferralName)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.Consultants) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.FirstName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Gender)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Birthdate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ReferralName)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">რედაქტირება</a> |
-                <a asp-action="Details" asp-route-id="@item.ID">დეტალები</a> |
-                <a asp-action="Delete" asp-route-id="@item.ID">წაშლა</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Gender)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Birthdate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReferralName)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ID">რედაქტირება</a> |
+                    <a asp-action="Details" asp-route-id="@item.ID">დეტალები</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ID">წაშლა</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
 
-@Html.Partial("~/Views/Shared/PaginationPartial.cshtml")
+@Html.Partial("~/Views/Shared/PaginationPartial.cshtml", new ActionControllerPair { Action = "Index", Controller = "Consultants" })
+

@@ -1,7 +1,9 @@
-﻿<div class="text-center">
+﻿@model MgebroStore.Models.ActionControllerPair
+
+<div class="text-center">
     <ul class="pagination text-center">
         <li class="page-item @if (ViewBag.Page == 1) { <text>disabled</text> }">
-            <a class="page-link" href="@Url.Action("Index", "Consultants", new { Page = ViewBag.Page - 1, PagesCount = ViewBag.PagesCount })">წინა</a>
+            <a class="page-link" href="@Url.Action(Model.Action, Model.Controller, new { Page = ViewBag.Page - 1, PagesCount = ViewBag.PagesCount })">წინა</a>
         </li>
         @for (int i = 1; i <= ViewBag.PagesCount; i++)
         {
@@ -14,12 +16,12 @@
             else
             {
                 <li class="page-item">
-                    <a class="page-link" href="@Url.Action("Index", "Consultants", new { Page = i, PagesCount = ViewBag.PagesCount })">@i</a>
+                    <a class="page-link" href="@Url.Action(Model.Action, Model.Controller, new { Page = i, PagesCount = ViewBag.PagesCount })">@i</a>
                 </li>
             }
         }
         <li class="page-item @if (ViewBag.Page == ViewBag.PagesCount) { <text>disabled</text> }">
-            <a class="page-link" href="@Url.Action("Index", "Consultants", new { Page = ViewBag.Page + 1, PagesCount = ViewBag.PagesCount })">შემდეგი</a>
+            <a class="page-link" href="@Url.Action(Model.Action, Model.Controller, new { Page = ViewBag.Page + 1, PagesCount = ViewBag.PagesCount })">შემდეგი</a>
         </li>
     </ul>
 </div>

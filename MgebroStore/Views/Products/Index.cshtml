@@ -25,23 +25,26 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Code)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">რედაქტირება</a> |
-                <a asp-action="Details" asp-route-id="@item.ID">დეტალურად</a> |
-                <a asp-action="Delete" asp-route-id="@item.ID">წაშლა</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Code)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ID">რედაქტირება</a> |
+                    <a asp-action="Details" asp-route-id="@item.ID">დეტალურად</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ID">წაშლა</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+@Html.Partial("~/Views/Shared/PaginationPartial.cshtml", new ActionControllerPair { Action = "Index", Controller = "Products" })

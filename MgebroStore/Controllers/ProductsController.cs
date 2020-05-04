@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using MgebroStore.Data;
 using MgebroStore.Data.Entities;
 using MgebroStore.Models.Error;
+using MgebroStore.Models.Product;
+using MgebroStore.Helpers;
 
 namespace MgebroStore.Controllers
 {
@@ -22,9 +24,15 @@ namespace MgebroStore.Controllers
 
 
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(IndexRequest req)
         {
-            return View(await _context.Products.ToListAsync());
+            var products = await _context.Products.ToListAsync();
+            products = products.Page(req.Page, req.Pagesize).ToList();
+
+            ViewBag.Page = req.Page;
+            ViewBag.PagesCount = Math.Ceiling(decimal.Divide(await _context.Products.CountAsync(), req.Pagesize));
+
+            return View(products);
         }
 
 
