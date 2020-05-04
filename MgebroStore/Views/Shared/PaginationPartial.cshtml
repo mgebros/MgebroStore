@@ -1,12 +1,13 @@
 ﻿@model MgebroStore.Models.ActionControllerPair
-
-@{
+@if (ViewBag.PagesCount != null || ViewBag.PagesCount != 0)
+{
     int prevPage = ViewBag.Page - 1;
     int nextPage = ViewBag.Page + 1;
-}
+
 <div class="text-center">
     <ul class="pagination text-center">
-        <li class="page-item @if (ViewBag.Page == 1) { <text>disabled</text> }">
+        <li class="page-item @if (ViewBag.Page == 1)
+        { <text>disabled</text> }">
             @*<a class="page-link" href="@Url.Action(Model.Action, Model.Controller, new { Page = ViewBag.Page - 1, PagesCount = ViewBag.PagesCount })">წინა</a>*@
             <a class="page-link" href="/@Model.Controller/@Model.Action?Page=@prevPage&PagesCount=@ViewBag.PagesCount&@ViewBag.QueryString ">წინა</a>
         </li>
@@ -26,9 +27,11 @@
                 </li>
             }
         }
-        <li class="page-item @if (ViewBag.Page == ViewBag.PagesCount) { <text>disabled</text> }">
+        <li class="page-item @if (ViewBag.Page == ViewBag.PagesCount || ViewBag.PagesCount == 0)
+        { <text>disabled</text> }">
             @*<a class="page-link" href="@Url.Action(Model.Action, Model.Controller, new { Page = ViewBag.Page + 1, PagesCount = ViewBag.PagesCount })">შემდეგი</a>*@
             <a class="page-link" href="/@Model.Controller/@Model.Action?Page=@nextPage&PagesCount=@ViewBag.PagesCount&@ViewBag.QueryString">შემდეგი</a>
         </li>
     </ul>
 </div>
+    }

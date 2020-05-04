@@ -66,6 +66,7 @@ body {
 .btn-primary {
     background-color: #ff600a !important;
     border-color: #ff600a !important;
+    color: #fec2a3;
 }
 
 a {
@@ -88,4 +89,23 @@ a {
     color: #ffffff !important;
     background-color: #ff600a !important;
     border-color: #fec2a3 !important;
+}
+
+button.dropdown-toggle{
+    margin-top:5px;
+}
+
+.orange-dropdown {
+    color: #ffffff !important;
+    background-color: #ff600a !important;
+    border: 2px solid rgba(0, 0, 0, .25) !important;
+}
+
+.orange-dropdown a:hover {
+    color: #ffffff !important;
+    background-color: #ff600a !important;
+}
+
+div.orange-divider {
+    border-top: 1px solid #fec2a3;
 }
