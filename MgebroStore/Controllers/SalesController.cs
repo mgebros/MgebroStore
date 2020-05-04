@@ -295,16 +295,6 @@ namespace MgebroStore.Controllers
 
         //გაყიდვები პროდუქციის ფასების მიხედვით:
         [HttpGet, ActionName("SearchByPrices")]
-        public async Task<IActionResult> SearchByPrices()
-        {
-            SearchByPricesViewModel vm = new SearchByPricesViewModel();
-            return View(vm);
-        }
-
-
-
-        //გაყიდვები პროდუქციის ფასების მიხედვით:
-        [HttpPost, ActionName("SearchByPrices")]
         public async Task<IActionResult> SearchByPrices(SearchByPricesRequest req)
         {
             //  Include last day's sales
@@ -312,10 +302,10 @@ namespace MgebroStore.Controllers
 
             SearchByPricesViewModel vm = new SearchByPricesViewModel();
 
-            
+
 
             //  ჯსონი სერვერისკენ ვერ დამუშავდება ამიტომაც აქეთ ვამშავებთ
-            var sales = _context.Sales.Where(s => s.SaleDate >= req.FromDate && s.SaleDate <= req.ToDate).ToList().Where(s => 
+            var sales = _context.Sales.Where(s => s.SaleDate >= req.FromDate && s.SaleDate <= req.ToDate).ToList().Where(s =>
             JArray.Parse(s.Description).Any(jt =>
             float.Parse(jt["Price"].ToString()) >= req.FromPrice &&
             float.Parse(jt["Price"].ToString()) <= req.ToPrice)).ToList();
@@ -334,10 +324,74 @@ namespace MgebroStore.Controllers
                 });
             }
 
+
+
+            ViewBag.Page = req.Page;
+            ViewBag.PagesCount = Math.Ceiling(decimal.Divide(vm.Items.Count, req.Pagesize));
+            vm.Items = vm.Items.Page(req.Page, req.Pagesize).ToList();
+
+
             vm.TotalPrice = vm.Items.Select(i => i.TotalPrice).Sum();
+
+            ViewBag.QueryString = "";
+            if (Request.QueryString.HasValue)
+            {
+                foreach (var q in Request.Query)
+                    ViewBag.QueryString += q.Key + "=" + q.Value.ToString().Split(',')[0] + "&";
+            }
+
+
 
             return View(vm);
         }
+
+
+
+        ////გაყიდვები პროდუქციის ფასების მიხედვით:
+        //[HttpGet, ActionName("SearchByPrices")]
+        //public async Task<IActionResult> SearchByPrices()
+        //{
+        //    SearchByPricesViewModel vm = new SearchByPricesViewModel();
+        //    return View(vm);
+        //}
+
+
+
+        ////გაყიდვები პროდუქციის ფასების მიხედვით:
+        //[HttpPost, ActionName("SearchByPrices")]
+        //public async Task<IActionResult> SearchByPrices(SearchByPricesRequest req)
+        //{
+        //    //  Include last day's sales
+        //    req.ToDate = req.ToDate.AddHours(23).AddMinutes(59).AddSeconds(59);
+
+        //    SearchByPricesViewModel vm = new SearchByPricesViewModel();
+
+            
+
+        //    //  ჯსონი სერვერისკენ ვერ დამუშავდება ამიტომაც აქეთ ვამშავებთ
+        //    var sales = _context.Sales.Where(s => s.SaleDate >= req.FromDate && s.SaleDate <= req.ToDate).ToList().Where(s => 
+        //    JArray.Parse(s.Description).Any(jt =>
+        //    float.Parse(jt["Price"].ToString()) >= req.FromPrice &&
+        //    float.Parse(jt["Price"].ToString()) <= req.ToPrice)).ToList();
+
+        //    foreach (var sale in sales)
+        //    {
+        //        var seller = JObject.Parse(sale.SellerInfo);
+
+        //        vm.Items.Add(new SearchByPricesItem()
+        //        {
+        //            ID = sale.ID,
+        //            SaleDate = sale.SaleDate,
+        //            FullName = seller["FullName"].ToString(),
+        //            PID = seller["PID"].ToString(),
+        //            TotalPrice = sale.TotalPrice
+        //        });
+        //    }
+
+        //    vm.TotalPrice = vm.Items.Select(i => i.TotalPrice).Sum();
+
+        //    return View(vm);
+        //}
 
 
 
