@@ -150,73 +150,27 @@ namespace MgebroStore.Controllers
 
 
 
-        //public async Task<IActionResult> Edit(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var sale = await _context.Sales.FindAsync(id);
-        //    if (sale == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return View(sale);
-        //}
-
-
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit(int id, [Bind("ID,SaleDate,SellerInfo,Description")] Sale sale)
-        //{
-        //    if (id != sale.ID)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        try
-        //        {
-        //            _context.Update(sale);
-        //            await _context.SaveChangesAsync();
-        //        }
-        //        catch (DbUpdateConcurrencyException)
-        //        {
-        //            if (!SaleExists(sale.ID))
-        //            {
-        //                return NotFound();
-        //            }
-        //            else
-        //            {
-        //                throw;
-        //            }
-        //        }
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(sale);
-        //}
-
-
-
-
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
+            var sale = await _context.Sales.FirstOrDefaultAsync(m => m.ID == id);
+            if (sale == null) return NotFound();
 
-            var sale = await _context.Sales
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (sale == null)
-            {
-                return NotFound();
-            }
 
-            return View(sale);
+            var seller = JObject.Parse(sale.SellerInfo);
+
+            SaleDeleteViewModel sd = new SaleDeleteViewModel();
+
+            sd.ID = sale.ID;
+            sd.SaleDate = sale.SaleDate;
+            sd.TotalPrice = sale.TotalPrice;
+
+            sd.PID = seller["PID"].ToString();
+            sd.Seller = seller["FullName"].ToString();
+
+            sd.SoldItems = JsonConvert.DeserializeObject<List<SaleItem>>(sale.Description);
+
+            return View(sd);
         }
 
         

@@ -4,7 +4,7 @@
     ViewData["Title"] = "გაყიდვები";
 }
 
-<h1>ნუსხა</h1>
+<h1>გაყიდვების ნუსხა</h1>
 
 <p>
     <a asp-action="Create">დამატება</a>
@@ -33,7 +33,7 @@
                 </td>
                 <td>
                     @*<a asp-action="Edit" asp-route-id="@item.ID">Edit</a>*@
-                    <a asp-action="Details" asp-route-id="@item.ID">დეტალები</a>
+                    <a asp-action="Details" asp-route-id="@item.ID">დეტალები</a> |
                     <a asp-action="Delete" asp-route-id="@item.ID">წაშლა</a>
                 </td>
             </tr>
