@@ -30,6 +30,12 @@
         if (ViewBag.MinQuantity != null)
             filter += "&MinQuantity=" + ViewBag.MinQuantity;
 
+        if (ViewBag.ToPrice != null)
+            filter += "&ToPrice=" + ViewBag.ToPrice;
+
+        if (ViewBag.FromPrice != null)
+            filter += "&FromPrice=" + ViewBag.FromPrice;
+
 
 
         return sort + filter;

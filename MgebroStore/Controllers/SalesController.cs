@@ -225,7 +225,40 @@ namespace MgebroStore.Controllers
             }
 
 
-            
+
+            if (!string.IsNullOrEmpty(req.SortOrder))
+                ViewBag.SortOrder = req.SortOrder;
+
+            switch (req.SortOrder)
+            {
+                case "ID":
+                    vm.Items = vm.Items.OrderBy(c => c.ID).ToList();
+                    break;
+                case "ID_Desc":
+                    vm.Items = vm.Items.OrderByDescending(c => c.ID).ToList();
+                    break;                
+                case "SaleDate":
+                    vm.Items = vm.Items.OrderBy(c => c.SaleDate).ToList();
+                    break;
+                case "SaleDate_Desc":
+                    vm.Items = vm.Items.OrderByDescending(c => c.SaleDate).ToList();
+                    break;
+                case "FullName":
+                    vm.Items = vm.Items.OrderBy(c => c.FullName).ToList();
+                    break;
+                case "FullName_Desc":
+                    vm.Items = vm.Items.OrderByDescending(c => c.FullName).ToList();
+                    break;
+                case "TotalPrice":
+                    vm.Items = vm.Items.OrderBy(c => c.TotalPrice).ToList();
+                    break;
+                case "TotalPrice_Desc":
+                    vm.Items = vm.Items.OrderByDescending(c => c.TotalPrice).ToList();
+                    break;
+            }
+
+
+
             ViewBag.Page = req.Page;
             ViewBag.PagesCount = Math.Ceiling(decimal.Divide(vm.Items.Count, req.Pagesize));
             vm.Items = vm.Items.Page(req.Page, req.Pagesize).ToList();
@@ -240,6 +273,12 @@ namespace MgebroStore.Controllers
                     ViewBag.QueryString += q.Key + "=" + q.Value.ToString().Split(',')[0] + "&";
             }
 
+            if (req.FromDate != null)
+                ViewBag.FromDate = req.FromDate.Value.ToString("yyyy-MM-dd");
+
+            if (req.ToDate != null)
+                ViewBag.ToDate = req.ToDate.Value.ToString("yyyy-MM-dd");
+
 
 
             return View(vm);
@@ -252,7 +291,8 @@ namespace MgebroStore.Controllers
         public async Task<IActionResult> SearchByPrices(SearchByPricesRequest req)
         {
             //  Include last day's sales
-            req.ToDate = req.ToDate.AddHours(23).AddMinutes(59).AddSeconds(59);
+            if(req.ToDate != null)
+                req.ToDate = ((DateTime)req.ToDate).AddHours(23).AddMinutes(59).AddSeconds(59);
 
             SearchByPricesViewModel vm = new SearchByPricesViewModel();
 
@@ -280,6 +320,38 @@ namespace MgebroStore.Controllers
 
 
 
+            if (!string.IsNullOrEmpty(req.SortOrder))
+                ViewBag.SortOrder = req.SortOrder;
+
+            switch (req.SortOrder)
+            {
+                case "ID":
+                    vm.Items = vm.Items.OrderBy(c => c.ID).ToList();
+                    break;
+                case "ID_Desc":
+                    vm.Items = vm.Items.OrderByDescending(c => c.ID).ToList();
+                    break;
+                case "SaleDate":
+                    vm.Items = vm.Items.OrderBy(c => c.SaleDate).ToList();
+                    break;
+                case "SaleDate_Desc":
+                    vm.Items = vm.Items.OrderByDescending(c => c.SaleDate).ToList();
+                    break;
+                case "FullName":
+                    vm.Items = vm.Items.OrderBy(c => c.FullName).ToList();
+                    break;
+                case "FullName_Desc":
+                    vm.Items = vm.Items.OrderByDescending(c => c.FullName).ToList();
+                    break;
+                case "TotalPrice":
+                    vm.Items = vm.Items.OrderBy(c => c.TotalPrice).ToList();
+                    break;
+                case "TotalPrice_Desc":
+                    vm.Items = vm.Items.OrderByDescending(c => c.TotalPrice).ToList();
+                    break;
+            }
+
+
             ViewBag.Page = req.Page;
             ViewBag.PagesCount = Math.Ceiling(decimal.Divide(vm.Items.Count, req.Pagesize));
             vm.Items = vm.Items.Page(req.Page, req.Pagesize).ToList();
@@ -294,6 +366,19 @@ namespace MgebroStore.Controllers
                     ViewBag.QueryString += q.Key + "=" + q.Value.ToString().Split(',')[0] + "&";
             }
 
+
+
+            if (req.FromDate != null)
+                ViewBag.FromDate = req.FromDate.Value.ToString("yyyy-MM-dd");
+
+            if (req.ToDate != null)
+                ViewBag.ToDate = req.ToDate.Value.ToString("yyyy-MM-dd");
+
+            if (req.ToPrice != null)
+                ViewBag.ToPrice = req.ToPrice;
+
+            if (req.FromPrice != null)
+                ViewBag.FromPrice = req.FromPrice;
 
 
             return View(vm);
