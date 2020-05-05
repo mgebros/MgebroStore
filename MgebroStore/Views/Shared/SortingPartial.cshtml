@@ -1,10 +1,45 @@
 ﻿@model MgebroStore.Models.SortingModel
 
+@{ 
+    string GetSortUrl(string type)
+    {
+        string filter = "";
+
+        //if (string.IsNullOrEmpty(ViewBag.Filter))
+        //{
+        //    filter = ViewBag.Filter;
+        //}
+
+        string sort = "?SortOrder=";
+
+        if (type == "desc")
+            sort += Model.Name_Desc;
+        else
+            sort += Model.Name;
+
+
+        if (ViewBag.FromDate != null)
+            filter += "&FromDate=" + ViewBag.FromDate;
+
+        if (ViewBag.ToDate != null)
+            filter += "&ToDate=" + ViewBag.ToDate;
+
+        if (ViewBag.Code != null)
+            filter += "&Code=" + ViewBag.Code;
+
+        if (ViewBag.MinQuantity != null)
+            filter += "&MinQuantity=" + ViewBag.MinQuantity;
+
+
+
+        return sort + filter;
+    }
+}
     <div class="mgebro-up-down">
-        <a href="?SortOrder=@Model.Name">
+        <a href="@GetSortUrl("ask")">
             <i class="fa fa-caret-up"></i>
         </a>
-        <a href="?SortOrder=@Model.Name_Desc">
+        <a href="@GetSortUrl("desc")">
             <i class="fa fa-caret-down"></i>
         </a>
     </div>

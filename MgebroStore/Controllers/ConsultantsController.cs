@@ -268,8 +268,13 @@ namespace MgebroStore.Controllers
         [HttpGet, ActionName("SearchByFrequentlySoldProducts")]
         public async Task<IActionResult> SearchByFrequentlySoldProducts(SearchByFrequentlySoldProductsRequest req)
         {
+            //if(req.FromDate == null || req.ToDate == null || req.Code == null || req.MinQuantity == null)
+            //{
+            //    return View("GeneralError", new GeneralErrorViewModel() { Text = "შეავსეთ სავალდებულო პარამეტრები!" });
+            //}
             //  Include last day's sales
-            req.ToDate = req.ToDate.AddHours(23).AddMinutes(59).AddSeconds(59);
+            if(req.ToDate != null)
+                req.ToDate = ((DateTime)(req.ToDate)).AddHours(23).AddMinutes(59).AddSeconds(59);
 
             SearchByFrequentlySoldProductsViewModel vm = new SearchByFrequentlySoldProductsViewModel();
 
@@ -338,7 +343,7 @@ namespace MgebroStore.Controllers
                     vm.Items.Add(new SearchByFrequentlySoldProductsItem()
                     {
                         Birthdate = con.Birthdate,
-                        Code = req.Code,
+                        Code = (int)req.Code,
                         FullName = con.GetFullName(),
                         ID = con.ID,
                         PID = con.PID,
@@ -348,6 +353,36 @@ namespace MgebroStore.Controllers
 
 
 
+            if (!string.IsNullOrEmpty(req.SortOrder))
+                ViewBag.SortOrder = req.SortOrder;
+
+            switch (req.SortOrder)
+            {
+                case "ID":
+                    vm.Items = vm.Items.OrderBy(c => c.ID).ToList();
+                    break;
+                case "ID_Desc":
+                    vm.Items = vm.Items.OrderByDescending(c => c.ID).ToList();
+                    break;
+                case "FullName":
+                    vm.Items = vm.Items.OrderBy(c => c.FullName).ToList();
+                    break;
+                case "FullName_Desc":
+                    vm.Items = vm.Items.OrderByDescending(c => c.FullName).ToList();
+                    break;
+                case "Birthdate":
+                    vm.Items = vm.Items.OrderBy(c => c.Birthdate).ToList();
+                    break;
+                case "Birthdate_Desc":
+                    vm.Items = vm.Items.OrderByDescending(c => c.Birthdate).ToList();
+                    break;
+                case "Quantity":
+                    vm.Items = vm.Items.OrderBy(c => c.Quantity).ToList();
+                    break;
+                case "Quantity_Desc":
+                    vm.Items = vm.Items.OrderByDescending(c => c.Quantity).ToList();
+                    break;
+            }
 
 
                 ViewBag.Page = req.Page;
@@ -364,7 +399,17 @@ namespace MgebroStore.Controllers
                         ViewBag.QueryString += q.Key + "=" + q.Value.ToString().Split(',')[0] + "&";
                 }
 
-                
+            if(req.FromDate != null)
+                ViewBag.FromDate = req.FromDate.Value.ToString("yyyy-MM-dd");
+
+            if (req.ToDate != null)
+                ViewBag.ToDate = req.ToDate.Value.ToString("yyyy-MM-dd");
+
+            if (req.Code != null)
+                ViewBag.Code = req.Code;
+
+            if (req.MinQuantity != null)
+                ViewBag.MinQuantity = req.MinQuantity;
 
 
 
@@ -373,44 +418,44 @@ namespace MgebroStore.Controllers
             //}
             //else
             //{
-                ////  Get sales in Date range
+            ////  Get sales in Date range
 
-                //var sales = _context.Sales.Where(s => s.SaleDate >= req.FromDate && s.SaleDate <= req.ToDate).ToList();
-
-
-
-                ////  Get All Code-Quantity pairs among sales to detect most sold product
-
-                //foreach (var sale in sales)
-                //{
-                //    foreach (var jt in JArray.Parse(sale.Description).ToArray())
-                //    {
-                //        var code = int.Parse(jt["Code"].ToString());
-                //        var quantity = int.Parse(jt["Quantity"].ToString());
-
-                //        var exists = pqp.FirstOrDefault(pp => pp.Code == code);
-
-                //        if (exists != null)
-                //        {
-                //            exists.Quantity += quantity;
-                //        }
-                //        else
-                //        {
-                //            pqp.Add(new ProdQuantityPair()
-                //            {
-                //                Code = code,
-                //                Quantity = quantity
-                //            });
-                //        }
-                //    }
-
-                //}
+            //var sales = _context.Sales.Where(s => s.SaleDate >= req.FromDate && s.SaleDate <= req.ToDate).ToList();
 
 
-                ////  Filter products by quantity
-                //pqp.RemoveAll(pp => pp.Quantity < req.MinQuantity || pp.Code != req.Code);
 
-                //pqp.OrderBy(pp => pp.Quantity);
+            ////  Get All Code-Quantity pairs among sales to detect most sold product
+
+            //foreach (var sale in sales)
+            //{
+            //    foreach (var jt in JArray.Parse(sale.Description).ToArray())
+            //    {
+            //        var code = int.Parse(jt["Code"].ToString());
+            //        var quantity = int.Parse(jt["Quantity"].ToString());
+
+            //        var exists = pqp.FirstOrDefault(pp => pp.Code == code);
+
+            //        if (exists != null)
+            //        {
+            //            exists.Quantity += quantity;
+            //        }
+            //        else
+            //        {
+            //            pqp.Add(new ProdQuantityPair()
+            //            {
+            //                Code = code,
+            //                Quantity = quantity
+            //            });
+            //        }
+            //    }
+
+            //}
+
+
+            ////  Filter products by quantity
+            //pqp.RemoveAll(pp => pp.Quantity < req.MinQuantity || pp.Code != req.Code);
+
+            //pqp.OrderBy(pp => pp.Quantity);
 
 
 
@@ -418,7 +463,7 @@ namespace MgebroStore.Controllers
             //}
 
 
-            
+
 
 
             return View(vm);
@@ -530,7 +575,46 @@ namespace MgebroStore.Controllers
                 });
             }
 
-            
+
+
+            if (!string.IsNullOrEmpty(req.SortOrder))
+                ViewBag.SortOrder = req.SortOrder;
+
+            switch (req.SortOrder)
+            {
+                case "ID":
+                    vm.Items = vm.Items.OrderBy(c => c.ID).ToList();
+                    break;
+                case "ID_Desc":
+                    vm.Items = vm.Items.OrderByDescending(c => c.ID).ToList();
+                    break;
+                case "FullName":
+                    vm.Items = vm.Items.OrderBy(c => c.FullName).ToList();
+                    break;
+                case "FullName_Desc":
+                    vm.Items = vm.Items.OrderByDescending(c => c.FullName).ToList();
+                    break;
+                case "Birthdate":
+                    vm.Items = vm.Items.OrderBy(c => c.Birthdate).ToList();
+                    break;
+                case "Birthdate_Desc":
+                    vm.Items = vm.Items.OrderByDescending(c => c.Birthdate).ToList();
+                    break;
+                case "TotalSales":
+                    vm.Items = vm.Items.OrderBy(c => c.TotalSales).ToList();
+                    break;
+                case "TotalSales_Desc":
+                    vm.Items = vm.Items.OrderByDescending(c => c.TotalSales).ToList();
+                    break;
+                case "HierarchicalTotalSales":
+                    vm.Items = vm.Items.OrderBy(c => c.HierarchicalTotalSales).ToList();
+                    break;
+                case "HierarchicalTotalSales_Desc":
+                    vm.Items = vm.Items.OrderByDescending(c => c.HierarchicalTotalSales).ToList();
+                    break;
+            }
+
+
 
             ViewBag.Page = req.Page;
             ViewBag.PagesCount = Math.Ceiling(decimal.Divide(vm.Items.Count, req.Pagesize));
@@ -546,6 +630,12 @@ namespace MgebroStore.Controllers
                 foreach (var q in Request.Query)
                     ViewBag.QueryString += q.Key + "=" + q.Value.ToString().Split(',')[0] + "&";
             }
+
+            if (req.FromDate != null)
+                ViewBag.FromDate = req.FromDate.Value.ToString("yyyy-MM-dd");
+
+            if (req.ToDate != null)
+                ViewBag.ToDate = req.ToDate.Value.ToString("yyyy-MM-dd");
 
 
             return View(vm);

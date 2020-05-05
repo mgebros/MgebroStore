@@ -57,21 +57,25 @@
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.Items[0].ID)
+                @Html.Partial("~/Views/Shared/SortingPartial.cshtml", new SortingModel { Name = "ID" })
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Items[0].FullName)
+                @Html.Partial("~/Views/Shared/SortingPartial.cshtml", new SortingModel { Name = "FullName" })
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Items[0].PID)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Items[0].Birthdate)
+                @Html.Partial("~/Views/Shared/SortingPartial.cshtml", new SortingModel { Name = "Birthdate" })
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Items[0].Code)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Items[0].Quantity)
+                @Html.Partial("~/Views/Shared/SortingPartial.cshtml", new SortingModel { Name = "Quantity" })
             </th>
         </tr>
     </thead>
