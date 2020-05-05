@@ -13,6 +13,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using MgebroStore.Helpers;
+using System.Data.SqlClient;
 
 namespace MgebroStore.Controllers
 {
@@ -52,6 +53,38 @@ namespace MgebroStore.Controllers
         {
             var cons = await _context.Consultants.ToListAsync();
             FillReferrerNames(cons);
+
+            if (!string.IsNullOrEmpty(req.SortOrder))
+                ViewBag.SortOrder = req.SortOrder;
+
+            switch (req.SortOrder)
+            {
+                case "FirstName":
+                    cons = cons.OrderBy(c => c.FirstName).ToList();
+                    break;
+                case "FirstName_Desc":
+                    cons = cons.OrderByDescending(c => c.FirstName).ToList();
+                    break;
+                case "LastName":
+                    cons = cons.OrderBy(c => c.LastName).ToList();
+                    break;
+                case "LastName_Desc":
+                    cons = cons.OrderByDescending(c => c.LastName).ToList();
+                    break;
+                case "Birthdate":
+                    cons = cons.OrderBy(c => c.Birthdate).ToList();
+                    break;
+                case "Birthdate_Desc":
+                    cons = cons.OrderByDescending(c => c.Birthdate).ToList();
+                    break;
+                case "ReferralName":
+                    cons = cons.OrderBy(c => c.ReferralName).ToList();
+                    break;
+                case "ReferralName_Desc":
+                    cons = cons.OrderByDescending(c => c.ReferralName).ToList();
+                    break;
+            }
+
             cons = cons.Page(req.Page, req.Pagesize).ToList();
 
             ViewBag.Page = req.Page;

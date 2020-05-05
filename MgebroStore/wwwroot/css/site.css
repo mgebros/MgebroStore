@@ -109,3 +109,18 @@ button.dropdown-toggle{
 div.orange-divider {
     border-top: 1px solid #fec2a3;
 }
+
+.mgebro-up-down .fa-caret-up {
+    position: relative;
+    top: 0px;
+    left: 0px;
+}
+.mgebro-up-down .fa-caret-down {
+    position: relative;
+    top: 7px;
+    left: -13px;
+}
+
+.mgebro-up-down {
+    display:inline-block;
+}

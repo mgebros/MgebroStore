@@ -14,9 +14,13 @@
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.FirstName)
+                @Html.Partial("~/Views/Shared/SortingPartial.cshtml", new SortingModel { Name = "FirstName" })
+
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.LastName)
+                @Html.Partial("~/Views/Shared/SortingPartial.cshtml", new SortingModel { Name = "LastName" })
+
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.PID)
@@ -26,9 +30,11 @@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Birthdate)
+                @Html.Partial("~/Views/Shared/SortingPartial.cshtml", new SortingModel { Name = "Birthdate" })
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.ReferralName)
+                @Html.Partial("~/Views/Shared/SortingPartial.cshtml", new SortingModel { Name = "ReferralName" })
             </th>
             <th></th>
         </tr>
